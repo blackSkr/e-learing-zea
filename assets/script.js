@@ -1,3 +1,10 @@
+        let voices = [];
+        
+        speechSynthesis.onvoiceschanged = () => {
+            voices = speechSynthesis.getVoices();
+        };
+                
+        
         // Vocabulary data
         const vocabulary = {
         colors: [
@@ -431,18 +438,28 @@
 
         function speakWord(word, category) {
             const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US'; // Gunakan English (US) atau 'en-GB' untuk British
             utterance.rate = 0.8;
             utterance.pitch = 1.2;
+
+            // (Opsional) Pilih suara English kalau tersedia
+            const voices = speechSynthesis.getVoices();
+            const englishVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB');
+            if (englishVoice) {
+                utterance.voice = englishVoice;
+            }
+
             speechSynthesis.speak(utterance);
 
-            // Tambah ke progress kalau belum ada
+            // Simpan progres
             if (!progress[category].includes(word)) {
                 progress[category].push(word);
                 localStorage.setItem('progress', JSON.stringify(progress));
-                updateProgressDisplay(); // Update dot
+                updateProgressDisplay();
             }
-                checkAllCompleted();
+            checkAllCompleted();
         }
+
 
 
         // Quiz functions
