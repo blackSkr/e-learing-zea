@@ -456,22 +456,29 @@ loadVoices().then(v => {
             showVocabulary(randomCategory);
         }
 
+
 async function speakWord(word, category) {
     if (voices.length === 0) {
-        voices = await loadVoices(); // pastikan tersedia
+        voices = await loadVoices();
     }
 
     const utterance = new SpeechSynthesisUtterance(word);
-    utterance.rate = 0.8;
-    utterance.pitch = 1.2;
+    utterance.rate = 0.85;  // Lebih natural
+    utterance.pitch = 1.1;  // Sedikit tinggi biar lebih mirip suara perempuan
 
-    const selectedVoice = voices.find(v => v.name.includes('Google US English')) || voices[0];
-    utterance.voice = selectedVoice;
+    // Cari voice perempuan berbahasa Inggris
+    const femaleVoice = voices.find(v =>
+        (v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+        (v.lang.startsWith('en') && v.name.toLowerCase().includes('google')) ||
+        (v.lang.startsWith('en') && v.name.toLowerCase().includes('english') && v.name.toLowerCase().includes('us'))
+    );
 
-    speechSynthesis.cancel(); // menghentikan suara sebelumnya kalau masih berbicara
+    utterance.voice = femaleVoice || voices.find(v => v.lang.startsWith('en')) || voices[0];
+
+    speechSynthesis.cancel(); // Hentikan suara sebelumnya
     speechSynthesis.speak(utterance);
 
-    // Tambah ke progress kalau belum ada
+    // Update progress
     if (!progress[category].includes(word)) {
         progress[category].push(word);
         localStorage.setItem('progress', JSON.stringify(progress));
@@ -480,9 +487,6 @@ async function speakWord(word, category) {
 
     checkAllCompleted();
 }
-
-
-
 
 
         // Quiz functions
