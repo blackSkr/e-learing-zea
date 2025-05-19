@@ -635,34 +635,41 @@ function speakWord(word, category) {
         // Song functions
         let audioPlayer = null;
 
-        function playSong(songName) {
-            currentSong = songName;
-            document.getElementById('karaoke-display').classList.remove('hidden');
-            document.getElementById('current-song-title').textContent = songs[songName].title;
+function playSong(songName) {
+    currentSong = songName;
+    document.getElementById('karaoke-display').classList.remove('hidden');
+    document.getElementById('current-song-title').textContent = songs[songName].title;
 
-            const lyricsContainer = document.getElementById('karaoke-lyrics');
-            lyricsContainer.innerHTML = songs[songName].lyrics.map(line => `<p>${line}</p>`).join('');
+    const lyricsContainer = document.getElementById('karaoke-lyrics');
+    lyricsContainer.innerHTML = songs[songName].lyrics.map(line => `<p>${line}</p>`).join('');
 
-            // Mainkan audio lokal
-            if (audioPlayer) {
-                audioPlayer.pause();
-            }
-            audioPlayer = new Audio(songs[songName].audio);
-            audioPlayer.play();
+    // Pastikan audio hanya diputar setelah interaksi pengguna
+    if (audioPlayer) {
+        audioPlayer.pause();
+    }
 
-            // Highlight lirik (kasar: 3 detik per baris)
-            currentLyricIndex = 0;
+    audioPlayer = new Audio(songs[songName].audio);
+
+    // Tambahkan ini agar tidak gagal di browser modern:
+    audioPlayer.play().catch(error => {
+        console.warn("🔇 Audio playback blocked, mungkin belum ada interaksi pengguna:", error);
+        // Bisa tambahkan fallback di sini (misalnya: alert pengguna)
+    });
+
+    // Highlight lirik (kasar: 5 detik per baris)
+    currentLyricIndex = 0;
+    highlightCurrentLyric();
+
+    lyricInterval = setInterval(() => {
+        currentLyricIndex++;
+        if (currentLyricIndex >= songs[songName].lyrics.length) {
+            clearInterval(lyricInterval);
+        } else {
             highlightCurrentLyric();
-
-            lyricInterval = setInterval(() => {
-                currentLyricIndex++;
-                if (currentLyricIndex >= songs[songName].lyrics.length) {
-                    clearInterval(lyricInterval);
-                } else {
-                    highlightCurrentLyric();
-                }
-            }, 5000);
         }
+    }, 5000);
+}
+
 
 
         function highlightCurrentLyric() {
