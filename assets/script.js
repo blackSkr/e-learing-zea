@@ -454,7 +454,7 @@
             const quizContainer = document.getElementById('quiz-container');
             
             // Check if time is between 9:00 AM and 9:30 AM
-            if (hours != 0) {
+            if (hours === 9 && minutes < 30) {
                 // Quiz is available
                 quizContainer.innerHTML = `
                     <h2 class="text-xl font-bold mb-4" style="color: #6A89CC;">Daily Quiz Time!</h2>
