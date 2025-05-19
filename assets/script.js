@@ -456,27 +456,9 @@ loadVoices().then(v => {
             showVocabulary(randomCategory);
         }
 
-async function speakWord(word, category) {
-    if (voices.length === 0) {
-        voices = await loadVoices();
-    }
+function speakWord(word, category) {
+    responsiveVoice.speak(word, "UK English Female");
 
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.rate = 0.85;
-    utterance.pitch = 1.1;
-
-    // Pakai voice wanita dengan artikulasi bagus
-    const selectedVoice = voices.find(v => v.name === 'Google UK English Female') 
-        || voices.find(v => v.name === 'Google US English');
-
-    if (selectedVoice) {
-        utterance.voice = selectedVoice;
-    }
-
-    speechSynthesis.cancel(); // stop voice sebelumnya
-    speechSynthesis.speak(utterance);
-
-    // Update progress
     if (!progress[category].includes(word)) {
         progress[category].push(word);
         localStorage.setItem('progress', JSON.stringify(progress));
@@ -485,6 +467,7 @@ async function speakWord(word, category) {
 
     checkAllCompleted();
 }
+
 
         // Quiz functions
         function checkQuizAvailability() {
