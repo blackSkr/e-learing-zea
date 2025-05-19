@@ -456,26 +456,24 @@ loadVoices().then(v => {
             showVocabulary(randomCategory);
         }
 
-
 async function speakWord(word, category) {
     if (voices.length === 0) {
         voices = await loadVoices();
     }
 
     const utterance = new SpeechSynthesisUtterance(word);
-    utterance.rate = 0.85;  // Lebih natural
-    utterance.pitch = 1.1;  // Sedikit tinggi biar lebih mirip suara perempuan
+    utterance.rate = 0.85;
+    utterance.pitch = 1.1;
 
-    // Cari voice perempuan berbahasa Inggris
-    const femaleVoice = voices.find(v =>
-        (v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
-        (v.lang.startsWith('en') && v.name.toLowerCase().includes('google')) ||
-        (v.lang.startsWith('en') && v.name.toLowerCase().includes('english') && v.name.toLowerCase().includes('us'))
-    );
+    // Pakai voice wanita dengan artikulasi bagus
+    const selectedVoice = voices.find(v => v.name === 'Google UK English Female') 
+        || voices.find(v => v.name === 'Google US English');
 
-    utterance.voice = femaleVoice || voices.find(v => v.lang.startsWith('en')) || voices[0];
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    }
 
-    speechSynthesis.cancel(); // Hentikan suara sebelumnya
+    speechSynthesis.cancel(); // stop voice sebelumnya
     speechSynthesis.speak(utterance);
 
     // Update progress
@@ -487,7 +485,6 @@ async function speakWord(word, category) {
 
     checkAllCompleted();
 }
-
 
         // Quiz functions
         function checkQuizAvailability() {
