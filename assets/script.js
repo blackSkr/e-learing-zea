@@ -362,7 +362,7 @@ loadVoices().then(v => {
                     "Now I know my ABCs",
                     "Next time won't you sing with me?"
                 ],
-                audio: "/web-education/assets/music/abc-alphabet-song-274033.mp3" // ✅ path absolut dari root server
+                audio: "assets/music/abc-alphabet-song-274033.mp3" // ✅ path absolut dari root server
             },
         };
         
