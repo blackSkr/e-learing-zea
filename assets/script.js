@@ -1,9 +1,9 @@
         let voices = [];
-        
         speechSynthesis.onvoiceschanged = () => {
             voices = speechSynthesis.getVoices();
         };
-                
+
+
         
         // Vocabulary data
         const vocabulary = {
@@ -436,29 +436,28 @@
             showVocabulary(randomCategory);
         }
 
-        function speakWord(word, category) {
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US'; // Gunakan English (US) atau 'en-GB' untuk British
-            utterance.rate = 0.8;
-            utterance.pitch = 1.2;
+function speakWord(word, category) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.rate = 0.8;
+    utterance.pitch = 1.2;
 
-            // (Opsional) Pilih suara English kalau tersedia
-            const voices = speechSynthesis.getVoices();
-            const englishVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB');
-            if (englishVoice) {
-                utterance.voice = englishVoice;
-            }
+    // Pilih voice bahasa Inggris
+    const selectedVoice = voices.find(v => v.name === 'Google US English');
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    }
 
-            speechSynthesis.speak(utterance);
+    speechSynthesis.speak(utterance);
 
-            // Simpan progres
-            if (!progress[category].includes(word)) {
-                progress[category].push(word);
-                localStorage.setItem('progress', JSON.stringify(progress));
-                updateProgressDisplay();
-            }
-            checkAllCompleted();
-        }
+    // Tambah ke progress kalau belum ada
+    if (!progress[category].includes(word)) {
+        progress[category].push(word);
+        localStorage.setItem('progress', JSON.stringify(progress));
+        updateProgressDisplay(); // Update dot
+    }
+    checkAllCompleted();
+}
+
 
 
 
