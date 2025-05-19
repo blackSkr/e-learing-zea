@@ -457,7 +457,10 @@ loadVoices().then(v => {
         }
 
 function speakWord(word, category) {
-    responsiveVoice.speak(word, "UK English Female");
+    responsiveVoice.speak(word, "UK English Female", {
+        rate: 0.75,   // Lebih pelan
+        pitch: 1.1    // Sedikit lebih tinggi, biar lebih ramah anak-anak
+    });
 
     if (!progress[category].includes(word)) {
         progress[category].push(word);
