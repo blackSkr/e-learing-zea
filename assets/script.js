@@ -1,7 +1,23 @@
-        let voices = [];
-        speechSynthesis.onvoiceschanged = () => {
-            voices = speechSynthesis.getVoices();
-        };
+let voices = [];
+
+function loadVoices() {
+    return new Promise((resolve) => {
+        let voiceList = speechSynthesis.getVoices();
+        if (voiceList.length !== 0) {
+            resolve(voiceList);
+        } else {
+            speechSynthesis.onvoiceschanged = () => {
+                voiceList = speechSynthesis.getVoices();
+                resolve(voiceList);
+            };
+        }
+    });
+}
+
+loadVoices().then(v => {
+    voices = v;
+});
+
 
 
         
@@ -366,12 +382,16 @@
         let screenTimeTimer = null;
 
         // Initialize the app
+        // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
+            loadVoices().then(v => voices = v); // ← ini tambahan penting
+
             updateTime();
             setInterval(updateTime, 1000);
             updateProgressDisplay();
             startScreenTimeMonitoring();
         });
+
 
         // Tab functions
         function showTab(tabName) {
@@ -436,27 +456,31 @@
             showVocabulary(randomCategory);
         }
 
-function speakWord(word, category) {
+async function speakWord(word, category) {
+    if (voices.length === 0) {
+        voices = await loadVoices(); // pastikan tersedia
+    }
+
     const utterance = new SpeechSynthesisUtterance(word);
     utterance.rate = 0.8;
     utterance.pitch = 1.2;
 
-    // Pilih voice bahasa Inggris
-    const selectedVoice = voices.find(v => v.name === 'Google US English');
-    if (selectedVoice) {
-        utterance.voice = selectedVoice;
-    }
+    const selectedVoice = voices.find(v => v.name.includes('Google US English')) || voices[0];
+    utterance.voice = selectedVoice;
 
+    speechSynthesis.cancel(); // menghentikan suara sebelumnya kalau masih berbicara
     speechSynthesis.speak(utterance);
 
     // Tambah ke progress kalau belum ada
     if (!progress[category].includes(word)) {
         progress[category].push(word);
         localStorage.setItem('progress', JSON.stringify(progress));
-        updateProgressDisplay(); // Update dot
+        updateProgressDisplay();
     }
+
     checkAllCompleted();
 }
+
 
 
 
